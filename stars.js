@@ -58,7 +58,7 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = '#fff';
-    for (var i = 0; i < stars.length; i++) {
+    for (let i = 0; i < stars.length; i++) {
         move(stars[i]);
         if (stars[i].x < -ORIGIN_X || stars[i].x > ORIGIN_X ||
             stars[i].y < -ORIGIN_Y || stars[i].y > ORIGIN_Y) {
@@ -74,7 +74,7 @@ function draw() {
     }
 }
 
-for (var i=0; i < NUM_STARS; i++) {
+for (let i = 0; i < NUM_STARS; i++) {
     stars.push(createStar());
 }
 
