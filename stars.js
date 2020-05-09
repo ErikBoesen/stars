@@ -5,6 +5,7 @@ canvas.width  = WIDTH;
 canvas.height = HEIGHT;
 let ORIGIN_X = WIDTH / 2,
     ORIGIN_Y = HEIGHT / 2;
+let STAR_SIZE_MULTIPLIER = 0.03;
 let ctx = canvas.getContext('2d');
 
 const NUM_STARS = 40;
@@ -49,7 +50,7 @@ function move(star) {
     star.dx += star.ddx;
     star.dy += star.ddy;
 
-    star.width = 2 + ((star.max_depth - star.z) * .1);
+    star.width = 2 + ((star.max_depth - star.z) * STAR_SIZE_MULTIPLIER);
 }
 
 function draw() {
