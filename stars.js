@@ -1,124 +1,83 @@
 let canvas = document.getElementById('canv');
-const SIZE = 5;
-const WIDTH = Math.floor(window.innerWidth / SIZE);
-const HEIGHT = Math.floor(window.innerHeight / SIZE);
-const MAX_GRASS_GROWTH = 20;
-const GRASS_GROWTH_SPEED = 400;
-const STARTING_BUNNY_COUNT = 20;
-const BUNNY_PADDING = 1;
-const REPRODUCTION_COOLDOWN = 10;
-const MAX_TIME_WITHOUT_FOOD = 3;
-canvas.height = HEIGHT * SIZE;
-canvas.width  = WIDTH * SIZE;
+let WIDTH = window.innerWidth,
+    HEIGHT = window.innerHeight;
+canvas.width  = WIDTH;
+canvas.height = HEIGHT;
+let ORIGIN_X = WIDTH / 2,
+    ORIGIN_Y = HEIGHT / 2;
 let ctx = canvas.getContext('2d');
+
+const NUM_STARS = 40;
 
 console.log('Started run.');
 
-let grass = [];
-for (row = 0; row < HEIGHT; row++) {
-    grass.push([]);
-    for (col = 0; col < WIDTH; col++) {
-        grass[row].push(MAX_GRASS_GROWTH);
-    }
-}
-function jump() {
-    return Math.floor(Math.random() * 3 - 1);
-}
-function random_x() {
-    return Math.floor(Math.random() * WIDTH);
-}
-function random_y() {
-    return Math.floor(Math.random() * HEIGHT);
-}
-let bunnies = [];
-for (count = 0; count < STARTING_BUNNY_COUNT; count++) {
-    bunnies.push({
-        time_since_reproduction: REPRODUCTION_COOLDOWN,
-        time_since_ate: 0,
-        x: random_x(),
-        y: random_y(),
-    });
-}
-let wolves = [];
+let stars = [];
 
-function tick() {
-    // Restore grass
-    for (square = 0; square < GRASS_GROWTH_SPEED; square++) {
-        restore_x = random_x();
-        restore_y = random_y();
-        if (grass[restore_y][restore_x] < MAX_GRASS_GROWTH) grass[restore_y][restore_x] += 1
+function createStar() {
+    var star = {};
+    star.x = Math.random() * WIDTH - ORIGIN_X;
+    star.y = Math.random() * HEIGHT - ORIGIN_Y;
+    star.z = star.max_depth = Math.max(WIDTH, HEIGHT);
+
+    var xcoeff = star.x > 0 ? 1 : -1;
+    var ycoeff = star.y > 0 ? 1 : -1;
+
+    if (Math.abs(star.x) > Math.abs(star.y)) {
+        star.dx = 1.0;
+        star.dy = Math.abs(star.y / star.x);
+    } else {
+        star.dx = Math.abs(star.x / star.y);
+        star.dy = 1.0;
     }
-    // Reproduce bunnies
-    var starting_bunny_count = bunnies.length;
-    if (starting_bunny_count < WIDTH * HEIGHT) {
-        for (bunny = 0; bunny < starting_bunny_count; bunny++) {
-            for (partner = 0; partner < starting_bunny_count; partner++) {
-                // If two bunnies are in the same place, reproduce.
-                if (bunny != partner
-                        && bunnies[bunny].x == bunnies[partner].x
-                        && bunnies[bunny].y == bunnies[partner].y
-                        && bunnies[bunny].time_since_reproduction >= REPRODUCTION_COOLDOWN
-                        && bunnies[partner].time_since_reproduction >= REPRODUCTION_COOLDOWN) {
-                    // Duplicate bunny and add to array
-                    console.log('Duplicating bunny');
-                    bunnies[bunny].time_since_reproduction = 0;
-                    bunnies[partner].time_since_reproduction = 0;
-                    bunnies.push({
-                        time_since_reproduction: 0,
-                        time_since_ate: 0,
-                        x: bunnies[bunny].x,
-                        y: bunnies[bunny].y,
-                    });
-                }
-            }
-        }
-    }
-    for (bunny of bunnies) {
-        bunny.time_since_reproduction += 1;
-        bunny.time_since_ate += 1;
-        if (grass[bunny.y][bunny.x] > 0) {
-            grass[bunny.y][bunny.x] -= 1;
-            bunny.time_since_ate = 0;
-        }
-        bunny.x += jump();
-        bunny.y += jump();
-        if (bunny.x < 0) bunny.x = 0;
-        else if (bunny.x >= WIDTH) bunny.x = WIDTH - 1;
-        if (bunny.y < 0) bunny.y = 0;
-        else if (bunny.y >= HEIGHT) bunny.y = HEIGHT - 1;
-    }
-    for (bunny = bunnies.length - 1; bunny >= 0; bunny--) {
-        if (bunnies[bunny].time_since_ate > MAX_TIME_WITHOUT_FOOD) {
-            console.log('Killing bunny');
-            bunnies.splice(bunny, 1);
-        }
-    }
+
+    star.dx *= xcoeff;
+    star.dy *= ycoeff;
+    star.dz = -1;
+
+    star.ddx = .1 * star.dx;
+    star.ddy = .1 * star.dy;
+
+    star.width = 2;
+    return star;
 }
+
+function move(star) {
+    star.x += star.dx;
+    star.y += star.dy;
+    star.z += star.dz;
+
+    star.dx += star.ddx;
+    star.dy += star.ddy;
+
+    star.width = 2 + ((star.max_depth - star.z) * .1);
+}
+
 function draw() {
-    for (row = 0; row < HEIGHT; row++) {
-        for (col = 0; col < WIDTH; col++) {
-            ctx.fillStyle = 'rgb(0,' + (255/MAX_GRASS_GROWTH * grass[row][col]) + ',0)';
-            ctx.fillRect(col * SIZE, row * SIZE, SIZE, SIZE);
+    // Background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#fff';
+    for (var i = 0; i < stars.length; i++) {
+        move(stars[i]);
+        if (stars[i].x < -ORIGIN_X || stars[i].x > ORIGIN_X ||
+            stars[i].y < -ORIGIN_Y || stars[i].y > ORIGIN_Y) {
+            // remove
+            stars[i] = createStar();
+        } else {
+            ctx.fillRect(
+                stars[i].x + ORIGIN_X,
+                stars[i].y + ORIGIN_Y,
+                stars[i].width,
+                stars[i].width
+            );
         }
     }
-    ctx.fillStyle = '#333';
-    for (bunny of bunnies) {
-        ctx.fillRect(bunny.x * SIZE + BUNNY_PADDING, bunny.y * SIZE + BUNNY_PADDING, SIZE - 2*BUNNY_PADDING, SIZE - 2*BUNNY_PADDING);
-    }
-}
-function loop() {
-    tick();
-    draw();
 }
 
-canvas.onclick = function(e) {
-    bunnies.push({
-        time_since_ate: 0,
-        time_since_reproduction: REPRODUCTION_COOLDOWN,
-        x: Math.floor(e.clientX / SIZE),
-        y: Math.floor(e.clientY / SIZE),
-    });
+for (var i=0; i < NUM_STARS; i++) {
+    stars.push(createStar());
 }
 
-loop();
-let main_loop = setInterval(loop, 1);
+draw();
+let main_loop = setInterval(draw, 10);
