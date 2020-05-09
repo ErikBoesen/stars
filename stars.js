@@ -54,7 +54,7 @@ function move(star) {
 
 function draw() {
     // Background
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#111';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = '#fff';
@@ -62,7 +62,6 @@ function draw() {
         move(stars[i]);
         if (stars[i].x < -ORIGIN_X || stars[i].x > ORIGIN_X ||
             stars[i].y < -ORIGIN_Y || stars[i].y > ORIGIN_Y) {
-            // remove
             stars[i] = createStar();
         } else {
             ctx.fillRect(
