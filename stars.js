@@ -90,30 +90,32 @@ for (let i = 0; i < NUM_STARS; i++) {
 draw();
 let main_loop = setInterval(draw, 10);
 
-function openFullscreen(callback) {
+function openFullscreen() {
     const elem = canvas;
-    if (elem.requestFullscreen) elem.requestFullscreen().then(callback);
-    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen().then(callback);
-    else if (elem.msRequestFullscreen) elem.msRequestFullscreen().then(callback);
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 }
 
-function closeFullscreen(callback) {
-    if (document.exitFullscreen) document.exitFullscreen().then(callback);
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen().then(callback);
-    else if (document.msExitFullscreen) document.msExitFullscreen().then(callback);
+function closeFullscreen() {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (document.msExitFullscreen) document.msExitFullscreen();
 }
 
 function toggleFullscreen(callback) {
     if (document.fullscreenElement) {
         console.log('Closing fullscreen');
-        closeFullscreen(callback);
+        closeFullscreen();
     } else {
         console.log('Opening fullscreen');
         const elem = canvas;
-        openFullscreen(callback);
+        openFullscreen();
     }
 }
 
 canvas.onclick = function() {
-    toggleFullscreen(setConstants);
+    toggleFullscreen();
 }
+
+onresize = setConstants;
