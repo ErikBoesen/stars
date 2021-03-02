@@ -103,7 +103,6 @@ function closeFullscreen(callback) {
     else if (document.msExitFullscreen) document.msExitFullscreen().then(callback);
 }
 
-let fullscreen = false;
 function toggleFullscreen(callback) {
     if (document.fullscreenElement) {
         console.log('Closing fullscreen');
@@ -116,8 +115,5 @@ function toggleFullscreen(callback) {
 }
 
 canvas.onclick = function() {
-    toggleFullscreen(function() {
-        fullscreen = !fullscreen;
-        setConstants();
-    });
+    toggleFullscreen(setConstants);
 }
