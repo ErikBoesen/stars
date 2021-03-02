@@ -16,7 +16,7 @@ function setConstants() {
 }
 setConstants();
 
-const NUM_STARS = 40;
+const NUM_STARS = 100;
 
 console.log('Started run.');
 
@@ -24,7 +24,6 @@ let stars = [];
 
 function createStar() {
     var star = {};
-    console.log(ORIGIN_X);
     star.x = Math.random() * WIDTH - ORIGIN_X;
     star.y = Math.random() * HEIGHT - ORIGIN_Y;
     star.z = star.max_depth = Math.max(WIDTH, HEIGHT);
@@ -91,37 +90,34 @@ for (let i = 0; i < NUM_STARS; i++) {
 draw();
 let main_loop = setInterval(draw, 10);
 
-function openFullscreen() {
-    console.log('Opening fullscreen');
+function openFullscreen(callback) {
     const elem = canvas;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Safari */
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE11 */
-        elem.msRequestFullscreen();
-    }
+    if (elem.requestFullscreen) elem.requestFullscreen().then(callback);
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen().then(callback);
+    else if (elem.msRequestFullscreen) elem.msRequestFullscreen().then(callback);
 }
 
-function closeFullscreen() {
-    console.log('Closing fullscreen');
-    const elem = canvas;
-    if (elem.exitFullscreen) {
-        elem.exitFullscreen();
-    } else if (elem.webkitExitFullscreen) { /* Safari */
-        elem.webkitExitFullscreen();
-    } else if (elem.msExitFullscreen) { /* IE11 */
-        elem.msExitFullscreen();
-    }
+function closeFullscreen(callback) {
+    if (document.exitFullscreen) document.exitFullscreen().then(callback);
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen().then(callback);
+    else if (document.msExitFullscreen) document.msExitFullscreen().then(callback);
 }
 
 let fullscreen = false;
-canvas.ondblclick = function() {
-    if (fullscreen) {
-        closeFullscreen();
+function toggleFullscreen(callback) {
+    if (document.fullscreenElement) {
+        console.log('Closing fullscreen');
+        closeFullscreen(callback);
     } else {
-        openFullscreen();
+        console.log('Opening fullscreen');
+        const elem = canvas;
+        openFullscreen(callback);
     }
-    fullscreen = !fullscreen;
-    setConstants();
+}
+
+canvas.ondblclick = function() {
+    toggleFullscreen(function() {
+        fullscreen = !fullscreen;
+        setConstants();
+    });
 }
