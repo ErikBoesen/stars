@@ -115,7 +115,7 @@ function toggleFullscreen(callback) {
     }
 }
 
-canvas.ondblclick = function() {
+canvas.onclick = function() {
     toggleFullscreen(function() {
         fullscreen = !fullscreen;
         setConstants();
