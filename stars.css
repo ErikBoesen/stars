@@ -5,7 +5,7 @@
 }
 html, body { height: 100%; }
 body {
-    background: #222;
+    background: #111;
     display: flex;
     justify-content: center;
     align-items: middle;
