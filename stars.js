@@ -2,7 +2,8 @@ let canvas = document.getElementById('canv');
 let ctx = canvas.getContext('2d');
 let WIDTH, HEIGHT,
     ORIGIN_X, ORIGIN_Y,
-    STAR_SIZE_MULTIPLIER, STAR_VELOCITY_MULTIPLIER;
+const STAR_SIZE_MULTIPLIER = 0.03;
+      STAR_VELOCITY_MULTIPLIER = 1;
 
 function setConstants() {
     console.log('Initializing constants');
@@ -12,8 +13,6 @@ function setConstants() {
     canvas.height = HEIGHT;
     ORIGIN_X = WIDTH / 2;
     ORIGIN_Y = HEIGHT / 2;
-    STAR_SIZE_MULTIPLIER = 0.03;
-    STAR_VELOCITY_MULTIPLIER = 0.3;
 }
 setConstants();
 
