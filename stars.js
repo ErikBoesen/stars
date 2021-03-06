@@ -1,8 +1,8 @@
 let canvas = document.getElementById('canv');
 let ctx = canvas.getContext('2d');
 let WIDTH, HEIGHT,
-    ORIGIN_X, ORIGIN_Y,
-const STAR_SIZE_MULTIPLIER = 0.03;
+    ORIGIN_X, ORIGIN_Y;
+const STAR_SIZE_MULTIPLIER = 0.03,
       STAR_VELOCITY_MULTIPLIER = 1;
 
 function setConstants() {
